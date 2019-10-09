@@ -4,7 +4,7 @@ var path = require('path');
 var logger = require('morgan');
 var Database = require('./classes/Database.js');
 var getJSON = require('get-json');
-var redis = require('async-redis').createClient();
+var redis = require('async-redis').createClient({ host: "redis" });
 const app_path = __dirname;
 
 var indexRouter = require('./routes.js');
@@ -32,7 +32,7 @@ app.use('/api/', require('cors')());
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(async function(req, res, next) {
+app.use(async function (req, res, next) {
     let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     let now = Date.now();
     now = now - (now % 1000);
@@ -55,18 +55,18 @@ app.use('/', indexRouter);
 //app.use('/users', usersRouter);
 
 // error handler
-app.use(function(err, req, res, next) {
-	// set locals, only providing error in development
-	res.locals.message = err.message;
-	res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-	// render the error page
-	res.status(err.status || 500);
-	res.render('error');
+    // render the error page
+    res.status(err.status || 500);
+    res.render('error');
 });
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.sendStatus(404);
     next();
 });
@@ -74,10 +74,10 @@ app.use(function(req, res, next) {
 module.exports = app;
 
 var mysql = new Database({
-	host: 'localhost',
-	user: 'evewho',
-	password: 'evewho',
-	database: 'evewho'
+    host: 'db',
+    user: 'evewho',
+    password: 'evewho',
+    database: 'evewho'
 });
 app.mysql = mysql;
 

@@ -1,0 +1,38 @@
+version: "3.5"
+services:
+  app:
+    image: node:lts
+    command: /var/www/evewho.com/bin/www.js
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/var/www/evewho.com/
+
+  cron:
+    image: node:lts
+    command: /var/www/evewho.com/bin/cron.js
+    volumes:
+      - ./:/var/www/evewho.com/
+
+  db:
+    image: mariadb:latest
+    command: mysqld --sql-mode="" --character-set-server=utf8 --collation-server=utf8_general_ci
+    environment:
+      - MYSQL_ROOT_PASSWORD=docker
+      - MYSQL_DATABASE=evewho
+      - MYSQL_USER=evewho
+      - MYSQL_PASSWORD=evewho
+    ports:
+      - "3306:3306"
+    volumes:
+      - db:/var/lib/mysql
+      - ./scheme.sql:/docker-entrypoint-initdb.d/scheme.sql
+
+  redis:
+    image: redis:latest
+    volumes:
+      - redis:/data
+
+volumes:
+  db:
+  redis:
